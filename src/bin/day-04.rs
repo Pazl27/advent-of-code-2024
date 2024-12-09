@@ -108,10 +108,10 @@ fn part1(matrix: &[Vec<char>]) -> Result<i32> {
 
 fn part2(matrix: &Vec<Vec<char>>) -> Result<i32> {
     let pairs = vec![
-        (-1, -1), // top-left diagonal
-        (-1, 1),  // top-right diagonal
-        (1, 1),   // bottom-right diagonal
-        (1, -1),  // bottom-left diagonal
+        (-1, -1), 
+        (-1, 1),  
+        (1, 1),   
+        (1, -1),  
     ];
     let mut total = 0;
 
@@ -119,18 +119,16 @@ fn part2(matrix: &Vec<Vec<char>>) -> Result<i32> {
         let row = &matrix[row_index];
         for col_index in 0..row.len() {
             if matrix[row_index][col_index] == 'A' {
-                if row_index >= 1 && col_index >= 1 && row_index < matrix.len() - 1 && col_index < row.len() - 1 {
-                    let mut word = String::new();
-                    for pair in &pairs {
-                        let new_row = row_index as i32 + pair.0;
-                        let new_col = col_index as i32 + pair.1;
-                        if new_row >= 0 && new_row < matrix.len() as i32 && new_col >= 0 && new_col < row.len() as i32 {
-                            word.push(matrix[new_row as usize][new_col as usize]);
-                        }
+                let mut word = String::new();
+                for pair in &pairs {
+                    let value = matrix.get((row_index as i32 + pair.0) as usize)
+                        .and_then(|row| row.get((col_index as i32 + pair.1) as usize));
+                    if let Some(value) = value {
+                        word.push(*value);
                     }
-                    if word == "MSSM" || word == "SSMM" || word == "SMMS" {
-                        total += 1;
-                    }
+                }
+                if word == "MSSM" || word == "SSMM" || word == "SMMS" || word == "MMSS" {
+                    total += 1;
                 }
             }
         }
@@ -152,17 +150,6 @@ fn test_all_cases() {
     ];
     assert_eq!(part1(&no_x_matrix).unwrap(), 2);
 
-// .M.S......
-// ..A..MSMS.
-// .M.S.MAA..
-// ..A.ASMSM.
-// .M.S.M....
-// ..........
-// S.S.S.S.S.
-// .A.A.A.A..
-// M.M.M.M.M.
-// ..........
-    
     let matrix = vec![
         vec!['.', 'M', '.', 'S', '.', '.', '.', '.', '.', '.'],
         vec!['.', '.', 'A', '.', '.', 'M', 'S', 'M', 'S', '.'],
